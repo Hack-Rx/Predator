@@ -1,7 +1,7 @@
 import os
 import tensorflow as tf
 from tensorflow.keras.applications.nasnet import NASNetLarge
-#from tensorflow.keras.applications.nasnet import preprocess_input
+from tensorflow.keras.applications.nasnet import preprocess_input
 #from tensorflow.keras.preprocessing import image
 
 
@@ -75,7 +75,7 @@ model.fit_generator(datagen,steps_per_epoch=10,epochs=20)
 model.save('trained_food_new2.h5')
 
 
-"""img_path = 'elephant.jpg'
+"""img_path = 'pizza.jpg'
 img = image.load_img(img_path, target_size=(331, 331))
 x = image.img_to_array(img)
 x = np.expand_dims(x, axis=0)
