@@ -1,0 +1,13 @@
+{% extends "foodNet/base.html" %}
+{% load static %}
+{% block content%}
+    {% for food in foods %}
+        
+        <p>{{food.food_name}}</p>
+        <p>{{food.calories}}</p>
+        <img src={{food.food_image.url}}>
+    
+    {%endfor%}
+    
+    
+{% endblock %}
