@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+{%load static %}
+  <html>
+    <head>
+        <meta charset='utf-8'>
+        <script type="text/javascript" src='webcam.js'></script>
+        <link rel='stylesheet' href='{% static 'foodNet/calstyle.css' %}'>
+    </head>
+
+    <body>
+        <div>
+            <h1>Upload an image of the food to measure the calorie content</h1>
+        </div>
+        
+        <div id="camera" style="height:auto;width:auto; text-align:left;"></div>
+
+        <!--FOR THE SNAPSHOT-->
+        <input id='b1' type="button" value="Take Snapshot" id="btPic" onclick="takeSnapShot()" /> 
+        
+        <p id="snapShot"></p>
+        <img  class='ss'src='' title='captured image' width=150>
+        <form method='post', action='{% url 'Calorie' %}' enctype="multipart/form-data">
+            {%csrf_token%}
+            {{form.as_p}}
+            <input type='submit' value='Calorie'>
+        </form>
+        <img class='manUp' src=''>
+
+
+    </body>
+
+    <script>
+        // CAMERA SETTINGS.
+        Webcam.set({
+            width: 220,
+            height: 190,
+            image_format: 'jpeg',
+            jpeg_quality: 100
+        });
+        Webcam.attach('#camera');
+        
+        // SHOW THE SNAPSHOT.
+        takeSnapShot = function () {
+            Webcam.snap(function (data_uri) {
+            
+                document.querySelector('.ss').setAttribute('src',data_uri);
+                
+                
+            });
+        }
+    
+        let up = document.querySelector('.manUp');
+        up.setAttribute('src',document.querySelector('.manual_upload').value);
+        console.log(document.querySelector('.manual_upload').value);
+
+    </script>
+
+  </html>
