@@ -2,7 +2,7 @@
 {% load static %}
 {% block content%}
     <form class='box' action='{% url 'add_food' %}' method='post' enctype='multipart/form-data'>
-                    <h1>Sign In</h1>
+                    <h1>Add Food</h1>
                     {%csrf_token%}
                     {{form.as_p}}
                     <input type='submit'  value='Submit'>

@@ -11,5 +11,5 @@ urlpatterns = [
     path('food-list', views.food_list_view, name='food_list'),
     path('create-walk', views.create_walk_view, name='create_walk'),
     path('walk-list', views.walk_list_view, name='walk_list'),
-    # path('recom', views.rec_view, name='recommender')
+    path('recom', views.rec_view, name='recommender')
 ]

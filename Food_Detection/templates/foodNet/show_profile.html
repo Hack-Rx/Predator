@@ -1,43 +1,41 @@
 {% extends "foodNet/base.html" %}
 {% load static %}
 {% block content%}
+<div class='jumbotron' background={% static 'foodNet/images/Circle_crop/'%}>
     <p>
+    Username:{{profile.name}}
+    </p>
+    <br>
+    <p>
+    Height:{{profile.height}}
+    </p>
+    <br>
+    <p>
+    Weight:{{profile.weight}}
+    </p>
+    <br>
+    <p>
+    BMI:{{profile.BMI}}
+    </p>
+    <br>
+    <p>
+    Workout:{{profile.workout}}
+    </p>
+    <br>
+    <p>
+    Gender:{{profile.gender}}
+    </p>
+    <br>
+    <p>
+    Total Steps:{{profile.total_steps}}
+    </p>
+    <br>
+    <p>
+    Total Calories:{{profile.total_calories}}
+    </p>
+    <br>
+    <br>
 
-    </p>
-    <p>
-
-    </p>
-    <p>
-
-    </p>
-    <p>
-
-    </p>
-
-    <p>
-    {{profile.name}}
-    </p>
-    <p>
-    {{profile.height}}
-    </p>
-    <p>
-    {{profile.weight}}
-    </p>
-    <p>
-    {{profile.BMI}}
-    </p>
-    <p>
-    {{profile.workout}}
-    </p>
-    <p>
-    {{profile.gender}}
-    </p>
-    <p>
-    {{profile.total_steps}}
-    </p>
-    <p>
-    {{profile.total_calories}}
-    </p>
-    <button><a href="{% url 'update_profile'%}">Update</a></button>
-    
+    <a href="{% url 'update_profile'%}"><button class='btn btn-primary'>Update</button></a>
+    </div>
 {% endblock %}

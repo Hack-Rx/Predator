@@ -103,68 +103,73 @@ def walk_list_view(request):
 
     
 
-# import tensorflow as tf
-# import numpy as np
+import tensorflow as tf
+import numpy as np
+w = []
 
-# def excersice(workout):
+g= []
 
-#     if workout=='less':
-#         w=[1,0,0]
-#     elif workout=='med':
-#         w=[0,1,0]
-#     elif workout=='high':
-#         w=[0,0,1]
-#     return w   
+c=[]
 
-# def sex(gender):
-    
-#     if gender=='m':
-#         g=[1,0]
-#     elif gender=='f':
-#         g=[0,1]
-#     return g
+def excersice(workout):
+    global w
+    if workout=='less':
+        w=[1,0,0]
+    elif workout=='med':
+        w=[0,1,0]
+    elif workout=='high':
+        w=[0,0,1]
+    return w   
+
+def sex(gender):
+    global g
+    if gender=='m':
+        g=[1,0]
+    elif gender=='f':
+        g=[0,1]
+    return g
         
-# def cal(calorie):
-    
-#     if calorie<=2000:
-#         c=[1,0,0]
-#     elif calorie<=2500:
-#         c=[0,1,0]
-#     elif calorie>2500:
-#         c=[0,0,1]
-#     return c
+def cal(calorie):
+    global c
+    if calorie<=2000:
+        c=[1,0,0]
+    elif calorie<=2500:
+        c=[0,1,0]
+    elif calorie>2500:
+        c=[0,0,1]
+    return c
 
-# def preprocessing(workout,bmi,gender,calorie):
-#     w=np.array(excersice(workout),dtype='float32')
-#     g=np.array(sex(gender),dtype='float32')
-#     w_b=np.append(w,[bmi],axis=0)
-#     w_b_g=np.append(w_b,g,axis=0)
-#     c=np.array(cal(calorie))
-#     return np.array([np.append(w_b_g,c,axis=0)],dtype='float32')
+def preprocessing(workout,bmi,gender,calorie):
+    w=np.array(excersice(workout),dtype='float32')
+    g=np.array(sex(gender),dtype='float32')
+    w_b=np.append(w,[bmi],axis=0)
+    w_b_g=np.append(w_b,g,axis=0)
+    c=np.array(cal(calorie))
+    return np.array([np.append(w_b_g,c,axis=0)],dtype='float32')
 
-# def output(array):
-#     r=np.array(np.reshape(array,(6,)),dtype='int')
-#     j=1
-#     for i in r:
-#         if i==0:
-#             j=j+1
-#     return j
+def output(array):
+    r=np.array(np.reshape(array,(6,)),dtype='int')
+    j=1
+    for i in r:
+        if i==0:
+            j=j+1
+    return j
 
-# model=tf.keras.models.load_model("foodNet/recc_diet.h5")
+model=tf.keras.models.load_model("foodNet/recc_diet.h5")
 
-# def rec_view(request):
-#     profile = request.user.profile
-#     ans=output(model.predict(preprocessing(profile.workout,profile.age,profile.gender,profile.total_calories)))
-#     if ans == '1':
-#         return render(request, 'foodNet/diet4.html')
-#     elif ans == '2':
-#         return render(request, 'foodNet/diet5.html')
-#     elif ans == '3':
-#         return render(request, 'foodNet/diet6.html')
-#     elif ans == '4':
-#         return render(request, 'foodNet/diet1.html')
-#     elif ans == '5':
-#         return render(request, 'foodNet/diet2.html')
-#     elif ans == '6':
-#         return render(request, 'foodNet/diet3.html')
+def rec_view(request):
+    profile = request.user.profile
+    ans=output(model.predict(preprocessing(profile.workout,profile.age,profile.gender,profile.total_calories)))
+    if ans == '1':
+        return render(request, 'foodNet/diet4.html')
+    elif ans == '2':
+        return render(request, 'foodNet/diet5.html')
+    elif ans == '3':
+        return render(request, 'foodNet/diet6.html')
+    elif ans == '4':
+        return render(request, 'foodNet/diet1.html')
+    elif ans == '5':
+        return render(request, 'foodNet/diet2.html')
+    elif ans == '6':
+        return render(request, 'foodNet/diet3.html')
 
