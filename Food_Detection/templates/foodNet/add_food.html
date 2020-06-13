@@ -1,0 +1,13 @@
+{% extends "foodNet/base.html" %}
+{% load static %}
+{% block content%}
+    <form class='box' action='{% url 'add_food' %}' method='post' enctype='multipart/form-data'>
+                    <h1>Sign In</h1>
+                    {%csrf_token%}
+                    {{form.as_p}}
+                    <input type='submit'  value='Submit'>
+                </form>
+            
+    
+           
+{% endblock %}

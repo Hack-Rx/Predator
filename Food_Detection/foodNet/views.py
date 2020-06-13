@@ -1,24 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
-from .forms import LoginForm, CalorieForm
+from .forms import LoginForm, FoodForm, CreateProfileForm, UpdateProfileForm, WalkForm
 
-import json
-from ibm_watson import VisualRecognitionV3, ApiException
-from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
-from PIL import Image
-
-from django.core.files.uploadedfile import SimpleUploadedFile
-
-authenticator = IAMAuthenticator('QeULZ3tNyXhuGlh4eQWn0DTJgcQET86_fym6s3Yn_A8z')
-visual_recognition = VisualRecognitionV3(
-    version='2018-03-19',
-    authenticator=authenticator
-)
-
-visual_recognition.set_service_url(
-    'https://api.us-south.visual-recognition.watson.cloud.ibm.com/instances/e83c2dab-5735-4074-8358-f792e6c3dc47'
-    )
 
 
 # Create your views here.
@@ -36,38 +20,92 @@ def loginview(request):
                 password=form.cleaned_data['password']
                 )
             if user is not None:
-                print('success')
-                return redirect('Calorie')
+                return redirect('create_profile')
+           
             else:
-                print('failed')
+                print('Failed')
     else:
         form = LoginForm()
 
     return render(request, 'foodNet/login.html', {'form':form})
 
+    
 @login_required
-def calorieview(request):
-    classes_result = dict()
-    if request.method == 'POST':
-        form = CalorieForm(request.POST)
+def create_profile_view(request):
+    if request.method == "POST" and request.user.profile is None:
+        form = CreateProfileForm(request.POST)
         if form.is_valid():
-            img_file = form.cleaned_data['image']
-            print(img_file)
-            classifier_ids = ["food"]
-            
-            try:
-                classes_result = visual_recognition.classify(
-                    images_file=img_file, classifier_ids=classifier_ids).get_result()
-                print(json.dumps(classes_result))
-            except ApiException as ex:
-                print("Method failed with status code " + str(ex.code) + ": " + ex.message)
-        print(classes_result.keys())       
-        for classifiers in classes_result["images"]:
-            print(classifier["classes"][0]["class"])
+            new_profile = form.save(commit=False)
+            new_profile.user = request.user
+            new_profile.save()
+            return redirect('show_profile')
+    else:
+        form = CreateProfileForm()
+
+    return render(request, 'foodNet/create_profile.html', {'form':form})
+
+@login_required
+def show_profile_view(request):
+    profile = request.user.profile
+    print(profile)
+    return render(request, 'foodNet/show_profile.html', {'profile': profile})
+
+@login_required
+def update_profile_view(request):
+    if request.method == 'POST':
+        profile = request.user.profile
+        form = UpdateProfileForm(request.POST, profile)
+        if form.is_valid():
+            form.save()
+            return redirect('show_profile')
+    else:
+        form = UpdateProfieForm()
+
+    return render(request, 'foodNet/create_profile.html', {'form':form})
+
+@login_required
+def add_food_view(request):
+    if request.method == "POST":
+        form = FoodForm(request.POST, request.FILES)
+        if form.is_valid():
+            new_food = form.save(commit=False)
+            new_food.uploader = request.user.profile
+            new_food.save()
+            return redirect('food_list')
 
     else:
-        form = CalorieForm()
+        form = FoodForm()
+    
+    return render(request, 'foodNet/add_food.html',{'form':form})
 
-    return render(request, 'foodNet/calorie_measurer.html', {'form':form})
+@login_required
+def food_list_view(request):
+    
+    foods = request.user.profile.foods.all()
+
+    return render(request,'foodNet/show_food.html', {'foods':foods})
+
+@login_required
+def create_walk_view(request):
+    if request.method == "POST":
+        form = WalkForm(request.POST)
+        if form.is_valid():
+            new_walk = form.save(commit=False)
+            new_walk.user = request.user.profile
+            new_walk.save()
+            return redirect('walk_list')
+
+    else:
+        form = WalkForm()
+
+    return render(request, 'foodNet/create_walk.html', {'form':form})
+
+@login_required
+def walk_list_view(request):
+
+    walks = request.user.profile.foods
+
+    return render(request, 'foodNet/walk_list_html', {'walks':walks})
 
     
+
