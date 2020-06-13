@@ -20,7 +20,7 @@
                     <li><a href='{% url 'show_profile' %}'>Profile</a></li>
                     <li><a href='{% url 'food_list' %}'>Food</a></li>
                     <li><a href='{% url 'walk_list' %}'>Walk</a></li>
-                    <li><a href='{% url 'recommender' %}'>Rec</a></li>
+                    {% comment %} <li><a href='{% url 'recommender' %}'>Rec</a></li> {% endcomment %}
 
                     {% else %}
                     <li><a href='{% url 'Login' %}'>Login</a></li>
