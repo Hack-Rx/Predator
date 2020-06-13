@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
-from .forms import LoginForm, FoodForm, CreateProfileForm, UpdateProfileForm, WalkForm
+from .forms import LoginForm, FoodForm, UpdateProfileForm, WalkForm
 
 
 
@@ -20,7 +20,7 @@ def loginview(request):
                 password=form.cleaned_data['password']
                 )
             if user is not None:
-                return redirect('create_profile')
+                return redirect('update_profile')
            
             else:
                 print('Failed')
@@ -30,19 +30,6 @@ def loginview(request):
     return render(request, 'foodNet/login.html', {'form':form})
 
     
-@login_required
-def create_profile_view(request):
-    if request.method == "POST" and request.user.profile is None:
-        form = CreateProfileForm(request.POST)
-        if form.is_valid():
-            new_profile = form.save(commit=False)
-            new_profile.user = request.user
-            new_profile.save()
-            return redirect('show_profile')
-    else:
-        form = CreateProfileForm()
-
-    return render(request, 'foodNet/create_profile.html', {'form':form})
 
 @login_required
 def show_profile_view(request):
@@ -54,14 +41,21 @@ def show_profile_view(request):
 def update_profile_view(request):
     if request.method == 'POST':
         profile = request.user.profile
-        form = UpdateProfileForm(request.POST, profile)
+        form = UpdateProfileForm(request.POST)
         if form.is_valid():
-            form.save()
+
+            profile.name = form.cleaned_data.get('name')
+            profile.height = form.cleaned_data.get('height')
+            profile.weight = form.cleaned_data.get('weight')
+            profile.gender = form.cleaned_data.get('gender')
+            profile.workout = form.cleaned_data.get('workout')
+            profile.save()
+        
             return redirect('show_profile')
     else:
-        form = UpdateProfieForm()
+        form = UpdateProfileForm()
 
-    return render(request, 'foodNet/create_profile.html', {'form':form})
+    return render(request, 'foodNet/update_profile.html', {'form':form})
 
 @login_required
 def add_food_view(request):
@@ -98,14 +92,79 @@ def create_walk_view(request):
     else:
         form = WalkForm()
 
-    return render(request, 'foodNet/create_walk.html', {'form':form})
+    return render(request, 'foodNet/add_walk.html', {'form':form})
 
 @login_required
 def walk_list_view(request):
 
-    walks = request.user.profile.foods
+    walks = request.user.profile.walks.all()
 
-    return render(request, 'foodNet/walk_list_html', {'walks':walks})
+    return render(request, 'foodNet/show_walk.html', {'walks':walks})
 
     
+
+# import tensorflow as tf
+# import numpy as np
+
+# def excersice(workout):
+
+#     if workout=='less':
+#         w=[1,0,0]
+#     elif workout=='med':
+#         w=[0,1,0]
+#     elif workout=='high':
+#         w=[0,0,1]
+#     return w   
+
+# def sex(gender):
+    
+#     if gender=='m':
+#         g=[1,0]
+#     elif gender=='f':
+#         g=[0,1]
+#     return g
+        
+# def cal(calorie):
+    
+#     if calorie<=2000:
+#         c=[1,0,0]
+#     elif calorie<=2500:
+#         c=[0,1,0]
+#     elif calorie>2500:
+#         c=[0,0,1]
+#     return c
+
+# def preprocessing(workout,bmi,gender,calorie):
+#     w=np.array(excersice(workout),dtype='float32')
+#     g=np.array(sex(gender),dtype='float32')
+#     w_b=np.append(w,[bmi],axis=0)
+#     w_b_g=np.append(w_b,g,axis=0)
+#     c=np.array(cal(calorie))
+#     return np.array([np.append(w_b_g,c,axis=0)],dtype='float32')
+
+# def output(array):
+#     r=np.array(np.reshape(array,(6,)),dtype='int')
+#     j=1
+#     for i in r:
+#         if i==0:
+#             j=j+1
+#     return j
+
+# model=tf.keras.models.load_model("foodNet/recc_diet.h5")
+
+# def rec_view(request):
+#     profile = request.user.profile
+#     ans=output(model.predict(preprocessing(profile.workout,profile.age,profile.gender,profile.total_calories)))
+#     if ans == '1':
+#         return render(request, 'foodNet/diet4.html')
+#     elif ans == '2':
+#         return render(request, 'foodNet/diet5.html')
+#     elif ans == '3':
+#         return render(request, 'foodNet/diet6.html')
+#     elif ans == '4':
+#         return render(request, 'foodNet/diet1.html')
+#     elif ans == '5':
+#         return render(request, 'foodNet/diet2.html')
+#     elif ans == '6':
+#         return render(request, 'foodNet/diet3.html')
 

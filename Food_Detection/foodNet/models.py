@@ -23,17 +23,18 @@ visual_recognition.set_service_url(
 nix = Nutritionix(app_id="a43c505b", api_key="ce2e2ad8e38bbf9dbb2043575c591179")
 # Create your models here.
 
-WORKOUT_TYPES = [('1' , 'Light'), ('2', 'Heavy')]
-GENDER = [('1', 'Male'), ('2', 'Female'), ('3', 'Other')]
+WORKOUT_TYPES = [('less' , 'Less'),('med', 'Medium'), ('high', 'Heavy')]
+GENDER = [('m', 'Male'), ('f', 'Female')]
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     name = models.CharField(max_length=50, blank=True)
     weight = models.FloatField(null=True)
     height = models.FloatField(null=True)
+    age = models.IntegerField(default=20)
     BMI = models.FloatField(null=True, blank=True)
     gender = models.CharField(max_length=1, choices=GENDER)
-    workout = models.CharField(max_length=1, choices=WORKOUT_TYPES)
+    workout = models.CharField(max_length=4, choices=WORKOUT_TYPES)
     total_calories = models.IntegerField(default=0)
     total_steps = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -47,13 +48,15 @@ class Profile(models.Model):
 
     def add_steps(self, steps):
         self.total_steps += steps
-
+        self.save()
     def add_calories(self, calories):
+        print('I am running')
         self.total_calories += calories
+        self.save()
     
-    def deduct_calories(self, calories_burnrd):
-        self.total_calories -= calories_burnrd
-    
+    def deduct_calories(self, calories_burned):
+        self.total_calories -= calories_burned
+        self.save()
     def __str__(self):
         return self.name
 
@@ -64,12 +67,12 @@ class Food(models.Model):
     calories = models.IntegerField(null=True)
 
     def save(self, *args, **kwargs):
-        img_file = str(self.food_image)
+        img_file = self.food_image
         classifier_ids = ['Food']
         classes_result = dict()
 
-        with open(img_file, 'rb') as images_file:
-            classes_result = visual_recognition.classify(images_file=images_file).get_result()
+        
+        classes_result = visual_recognition.classify(images_file=img_file).get_result()
             
         if 'images' in classes_result:
             print('working')       
@@ -81,8 +84,9 @@ class Food(models.Model):
             _id = b[0]
             self.calories = nix.item(id=_id['_id']).json()['nf_calories']
             print(self.calories)
-            self.uploader.add_calories(self.calories)
             super().save(*args, **kwargs)
+            self.uploader.add_calories(int(self.calories))
+            
 
         else:
             print('something is wrong') 

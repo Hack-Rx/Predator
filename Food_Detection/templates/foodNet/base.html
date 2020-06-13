@@ -18,7 +18,10 @@
                     {% if user.is_authenticated %}
                     
                     <li><a href='{% url 'show_profile' %}'>Profile</a></li>
-                    <li><a href='assistant.html'>Diet-Recommender</a></li>
+                    <li><a href='{% url 'food_list' %}'>Food</a></li>
+                    <li><a href='{% url 'walk_list' %}'>Walk</a></li>
+                    <li><a href='{% url 'recommender' %}'>Rec</a></li>
+
                     {% else %}
                     <li><a href='{% url 'Login' %}'>Login</a></li>
                     {% endif %}

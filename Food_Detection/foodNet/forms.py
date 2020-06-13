@@ -18,14 +18,14 @@ class WalkForm(forms.ModelForm):
         model = Walk
         fields = ['steps']
 
-class CreateProfileForm(forms.ModelForm):
+# class CreateProfileForm(forms.ModelForm):
 
-    class Meta:
-        model = Profile
-        fields = ['name', 'height', 'weight', 'gender', 'workout']
+#     class Meta:
+#         model = Profile
+#         fields = 
 
 class UpdateProfileForm(forms.ModelForm):
 
     class Meta:
         model = Profile
-        fields = ['name','weight']
+        fields = ['name', 'height', 'weight', 'gender', 'workout']
